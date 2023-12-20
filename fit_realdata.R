@@ -9,8 +9,8 @@ require(doParallel)
 source("auxiliary_hsmm.R")
 
 # Data --------------------------------------------------------------------
-load("dat.RData")
-
+objs=load("dat.RData")
+str(dat)
 Y <- dat[, c("Wind.Dir", "Wave.Dir")]
 # X <- scale(dat[, c("Wind.Vv")])
 X <- dat[, c("Wind.Vv")]
@@ -19,11 +19,20 @@ dat %>%
   ggplot(aes(Wind.Dir, Wave.Dir, color = Wind.Vv)) +
   geom_point(size = 2) +
   labs(x = "Wind direction [rad]", y = "Wave direction [rad]", color = "Wind speed (m/s)") +
-  scale_x_continuous(breaks = seq(-3,3, by = 1.5), labels = c("S", "W", "N", "E", "S")) +
-  scale_y_continuous(breaks = seq(-3,3, by = 1.5), labels = c("S", "W", "N", "E", "S")) +
+  ##scale_x_continuous(breaks = seq(-3,3, by = 1.5), labels = c("S", "W", "N", "E", "S")) +
+  ##scale_y_continuous(breaks = seq(-3,3, by = 1.5), labels = c("S", "W", "N", "E", "S")) +
   theme_bw() +
   theme(legend.position = "top", text = element_text(size = 16))
 
+library(data.table)
+dir.long <- melt(data.table(dat)[, data.i := .I], id.vars="data.i", measure.vars=c("Wind.Dir", "Wave.Dir"))
+
+ggplot()+
+  geom_point(aes(
+    data.i, value),
+    data=dir.long)+
+  facet_grid(variable ~ .)
+    
 
 # Estimation --------------------------------------------------------------
 # Model with no mixture
